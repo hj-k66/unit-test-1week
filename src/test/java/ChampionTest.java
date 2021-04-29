@@ -5,6 +5,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.number.IsCloseTo.closeTo;
+import static org.hamcrest.object.HasToString.*;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.*;
+
 public class ChampionTest {
     private List<Champion> championList = new ArrayList<Champion>();
 
@@ -30,18 +39,23 @@ public class ChampionTest {
     @Test
     public void givenCollectionWhenEmptyCorrect() {
         List<String> emptyList = new ArrayList<>();
+        assertThat(emptyList,is(empty()));
     }
+
+
 
     //notNullValue 활용한 테스트
     @Test
     public void notNullCheck() {
         String lck = "LCK";
+        assertThat(lck,notNullValue());
     }
 
     //nullValue 활용한 테스트
     @Test
     public void givenStringWhenNullIsCorrect() {
         String lck = null;
+        assertThat(lck,nullValue());
     }
 
     //문자열 관련 테스트 anyOf, containsString, endWith
@@ -51,44 +65,56 @@ public class ChampionTest {
         String sampleString2 = "Player point";
         String startString = "Player";
         String endString = "point";
+
+        assertThat(sampleString1, anyOf(containsString(startString),endsWith(endString)));
     }
+
+
 
     //부동소수점 범위 closeTo 테스트
     @Test
     public void testForFloatingPoint() {
-
+        double test = 5.1234;
+        assertThat(test,closeTo(5,0.3));
     }
 
     //anything 테스트
     @Test
     public void shouldNotErrorGetReference() {
+        for(int i = 0; i < championList.size(); i++){
+            assertThat(championList.get(i).getPosition(), anything());
+        }
 
     }
 
     //객체 크기 검증 테스트 hasSize
     @Test
     public void shouldChampionCountFive() {
-
+        assertThat(championList,hasSize(5));
     }
 
     //서폿 챔피언은 타릭이어야 한다라는 조건으로 테스트 코드 작성
     @Test
     public void shouldSupportChampionIsTaric() {
         Champion supportChamp = new Champion("타릭", "바텀");
+        assertThat(supportChamp.getName(),is("타릭"));
+        assertThat(supportChamp.getPosition(),is("바텀"));
 
     }
 
     //hasProperty 활용하여 속성이 포함되어 있는지 테스트
     @Test
     public void shouldHasPropertyPosition() {
-
+        for(int i = 0; i < championList.size(); i++){
+            assertThat(championList.get(i), hasProperty("name"));
+        }
     }
 
     //hasToString 활용 테스트
     @Test
     public void shouldHaveSomeChampName() {
         List<String> champListNames = Arrays.asList("루시안", "애쉬", "렉사이", "갈리오", "모르가느", "블라디미르");
-
+        assertThat(champListNames, hasToString("[루시안, 애쉬, 렉사이, 갈리오, 모르가느, 블라디미르]"));
     }
 
     //property와 value가 같은지 테스트
@@ -96,13 +122,13 @@ public class ChampionTest {
     public void shouldHaveSamePropertyAndValue() {
         List<String> championNames1 = Arrays.asList("루시안", "애쉬", "렉사이", "갈리오", "모르가나", "블라디미르");
         List<String> championNames2 = Arrays.asList("루시안", "애쉬", "렉사이", "갈리오", "모르가나", "블라디미르");
-
+        assertThat(championNames1,samePropertyValuesAs(championNames2));
     }
 
     //탑 챔피언은 다리우스여야 한다라는 조건으로 테스트 코드 작성, stream 활용예
     @Test
     public void shouldTopChampionIsDarius() {
-
+        assertThat(championList.stream().filter(champion -> champion.getPosition().equals("탑")).findAny().orElse(null).getName(),is("다리우스"));
     }
 
 }
